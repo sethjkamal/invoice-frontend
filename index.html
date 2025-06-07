@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Invoice</title>
+  <link rel="stylesheet" href="style.css"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Create Invoice</h1>
+    <form id="invoiceForm">
+      <fieldset>
+        <legend>Client Information</legend>
+        <input type="text" placeholder="Client Name" id="clientName" required />
+        <input type="email" placeholder="Client Email" id="clientEmail" required />
+        <input type="text" placeholder="Phone" id="clientPhone" />
+        <input type="text" placeholder="Address" id="clientAddress" />
+      </fieldset>
+
+      <fieldset>
+        <legend>Invoice Details</legend>
+        <input type="text" placeholder="Invoice Number" id="invoiceNumber" readonly />
+        <input type="date" id="invoiceDate" />
+        <input type="date" id="dueDate" />
+      </fieldset>
+
+      <fieldset>
+        <legend>Items</legend>
+        <div id="itemsContainer"></div>
+        <button type="button" onclick="addItem()">Add Item</button>
+      </fieldset>
+
+      <fieldset>
+        <legend>Additional</legend>
+        <input type="number" placeholder="Tax (%)" id="tax" />
+        <input type="number" placeholder="Discount (%)" id="discount" />
+        <textarea placeholder="Notes" id="notes"></textarea>
+      </fieldset>
+
+      <h3>Total: $<span id="totalAmount">0.00</span></h3>
+
+      <button type="submit">Preview Invoice</button>
+    </form>
+
+    <div id="invoicePreview" style="display: none;">
+        <h2>Invoice Preview</h2>
+        <div id="previewContent"></div>
+        <button onclick="downloadPDF()">Download as PDF</button>
+        <button onclick="backToForm()">Back to Edit</button>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
