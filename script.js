@@ -113,7 +113,11 @@ function backToForm() {
 }
 
 function downloadPDF() {
-  const element = document.getElementById("previewContent");
+  // Hide buttons before generating PDF
+  const buttons = document.querySelectorAll('#invoicePreview button');
+  buttons.forEach(btn => btn.style.display = 'none');
+
+  const element = document.getElementById("invoicePreview").firstElementChild;
   const opt = {
     margin: 0.5,
     filename: 'invoice.pdf',
@@ -122,5 +126,8 @@ function downloadPDF() {
     jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
   };
 
-  html2pdf().set(opt).from(element).save();
+  html2pdf().set(opt).from(element).save().then(() => {
+    // Show buttons again after download
+    buttons.forEach(btn => btn.style.display = 'inline-block');
+  });
 }

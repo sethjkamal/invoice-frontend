@@ -2,55 +2,73 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Create Invoice</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
-  <div class="container">
+  <form id="invoiceForm">
     <h1>Create Invoice</h1>
-    <form id="invoiceForm">
-      <fieldset>
-        <legend>Client Information</legend>
-        <input type="text" placeholder="Client Name" id="clientName" required />
-        <input type="email" placeholder="Client Email" id="clientEmail" required />
-        <input type="text" placeholder="Phone" id="clientPhone" />
-        <input type="text" placeholder="Address" id="clientAddress" />
-      </fieldset>
 
-      <fieldset>
-        <legend>Invoice Details</legend>
-        <input type="text" placeholder="Invoice Number" id="invoiceNumber" readonly />
-        <input type="date" id="invoiceDate" />
-        <input type="date" id="dueDate" />
-      </fieldset>
+    <fieldset>
+      <legend>Client Information</legend>
+      <input type="text" id="clientName" placeholder="Client Name" required />
+      <input type="email" id="clientEmail" placeholder="Client Email" required />
+      <input type="text" id="clientPhone" placeholder="Client Phone" />
+      <input type="text" id="clientAddress" placeholder="Client Address" />
+    </fieldset>
 
-      <fieldset>
-        <legend>Items</legend>
-        <div id="itemsContainer"></div>
-        <button type="button" onclick="addItem()">Add Item</button>
-      </fieldset>
+    <fieldset>
+      <legend>Invoice Details</legend>
+      <input type="text" id="invoiceNumber" readonly />
+      <input type="date" id="invoiceDate" required />
+      <input type="date" id="dueDate" required />
+    </fieldset>
 
-      <fieldset>
-        <legend>Additional</legend>
-        <input type="number" placeholder="Tax (%)" id="tax" />
-        <input type="number" placeholder="Discount (%)" id="discount" />
-        <textarea placeholder="Notes" id="notes"></textarea>
-      </fieldset>
+    <fieldset>
+      <legend>Items</legend>
+      <div id="itemsContainer"></div>
+      <button type="button" onclick="addItem()">Add Item</button>
+    </fieldset>
 
-      <h3>Total: $<span id="totalAmount">0.00</span></h3>
+    <fieldset>
+      <legend>Summary</legend>
+      <input type="number" id="tax" placeholder="Tax (%)" />
+      <input type="number" id="discount" placeholder="Discount (%)" />
+      <textarea id="notes" placeholder="Notes"></textarea>
+      <p><strong>Total: $<span id="totalAmount">0.00</span></strong></p>
+    </fieldset>
 
-      <button type="submit">Preview Invoice</button>
-    </form>
+    <button type="submit">Preview Invoice</button>
+  </form>
 
-    <div id="invoicePreview" style="display: none;">
-        <h2>Invoice Preview</h2>
-        <div id="previewContent"></div>
+  <!-- Professional Invoice Preview Section -->
+  <div id="invoicePreview" style="display: none; font-family: Arial, sans-serif;">
+    <div style="border: 1px solid #ccc; padding: 30px; max-width: 800px; margin: auto; background: #fff;">
+      <!-- Company Info -->
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2 style="margin: 0;">Zayan Soft Tech</h2>
+          <p style="margin: 5px 0;">Phone: +92 333 3508798</p>
+          <p style="margin: 5px 0;">Email: info@zayansofttech.com</p>
+          <p style="margin: 5px 0;">Address: Karachi, Pakistan</p>
+        </div>
+        <div>
+          <img src="zayan-logo.png.jpg" alt="Company Logo" style="height: 80px;"/>
+        </div>
+      </div>
+
+      <hr style="margin: 20px 0;"/>
+
+      <!-- Invoice Details -->
+      <div id="previewContent"></div>
+
+      <div style="margin-top: 30px; text-align: center;">
         <button onclick="downloadPDF()">Download as PDF</button>
         <button onclick="backToForm()">Back to Edit</button>
+      </div>
     </div>
-
   </div>
 
   <script src="script.js"></script>
