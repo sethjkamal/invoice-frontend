@@ -40,6 +40,20 @@
       <p><strong>Total: $<span id="totalAmount">0.00</span></strong></p>
     </fieldset>
 
+    <!-- Installment Section -->
+    <fieldset>
+      <legend>Installment Payments</legend>
+      <label>
+        <input type="checkbox" id="enableInstallments" onchange="toggleInstallments()" />
+        Enable Installments
+      </label>
+
+      <div id="installmentSection" style="display: none; margin-top: 10px;">
+        <input type="number" id="numInstallments" placeholder="Number of Installments" oninput="generateInstallmentFields()" />
+        <div id="installmentFields" style="margin-top: 10px;"></div>
+      </div>
+    </fieldset>
+
     <button type="submit">Preview Invoice</button>
   </form>
 

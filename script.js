@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const invoiceNumber = "INV-" + Math.floor(Math.random() * 1000000);
   document.getElementById("invoiceNumber").value = invoiceNumber;
 
-  addItem(); // Add one item by default
+  addItem();
 });
 
 function addItem() {
@@ -19,17 +19,15 @@ function addItem() {
   container.appendChild(div);
 }
 
-// Watch for changes on inputs to recalculate total
 document.getElementById("invoiceForm").addEventListener("input", calculateTotal);
 
 function calculateTotal() {
   let subtotal = 0;
 
-  const descriptions = document.querySelectorAll(".itemDescription");
   const quantities = document.querySelectorAll(".itemQuantity");
   const rates = document.querySelectorAll(".itemRate");
 
-  for (let i = 0; i < descriptions.length; i++) {
+  for (let i = 0; i < quantities.length; i++) {
     const quantity = parseFloat(quantities[i].value) || 0;
     const rate = parseFloat(rates[i].value) || 0;
     subtotal += quantity * rate;
@@ -63,18 +61,17 @@ function generatePreview() {
   const notes = document.getElementById("notes").value;
   const totalAmount = document.getElementById("totalAmount").textContent;
 
-  const items = [];
   const descriptions = document.querySelectorAll(".itemDescription");
   const quantities = document.querySelectorAll(".itemQuantity");
   const rates = document.querySelectorAll(".itemRate");
 
+  let items = [];
   for (let i = 0; i < descriptions.length; i++) {
-    items.push({
-      description: descriptions[i].value,
-      quantity: quantities[i].value,
-      rate: rates[i].value,
-      total: (quantities[i].value * rates[i].value).toFixed(2)
-    });
+    const desc = descriptions[i].value;
+    const qty = parseFloat(quantities[i].value) || 0;
+    const rate = parseFloat(rates[i].value) || 0;
+    const total = (qty * rate).toFixed(2);
+    items.push({ description: desc, quantity: qty, rate: rate, total });
   }
 
   let html = `
@@ -102,6 +99,19 @@ function generatePreview() {
     <p><strong>Notes: </strong>${notes}</p>
   `;
 
+  // Add installment preview if enabled
+  const enableInstallments = document.getElementById("enableInstallments").checked;
+  if (enableInstallments) {
+    const numInstallments = parseInt(document.getElementById("numInstallments").value) || 0;
+    html += `<h3>Installment Payments:</h3><ul>`;
+    for (let i = 1; i <= numInstallments; i++) {
+      const instField = document.getElementById(`installment-${i}`);
+      const instValue = parseFloat(instField.value) || 0;
+      html += `<li>Installment ${i}: $${instValue.toFixed(2)}</li>`;
+    }
+    html += `</ul>`;
+  }
+
   document.getElementById("previewContent").innerHTML = html;
   document.getElementById("invoiceForm").style.display = "none";
   document.getElementById("invoicePreview").style.display = "block";
@@ -113,21 +123,49 @@ function backToForm() {
 }
 
 function downloadPDF() {
-  // Hide buttons before generating PDF
   const buttons = document.querySelectorAll('#invoicePreview button');
   buttons.forEach(btn => btn.style.display = 'none');
 
   const element = document.getElementById("invoicePreview").firstElementChild;
-  const opt = {
-    margin: 0.5,
-    filename: 'invoice.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-  };
 
-  html2pdf().set(opt).from(element).save().then(() => {
-    // Show buttons again after download
-    buttons.forEach(btn => btn.style.display = 'inline-block');
-  });
+  // Use a small delay to ensure all layout is rendered before PDF generation
+  setTimeout(() => {
+    const opt = {
+      margin: 0.5,
+      filename: 'invoice.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        scrollY: 0
+      },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+      buttons.forEach(btn => btn.style.display = 'inline-block');
+    });
+  }, 300);
+}
+
+// Toggle Installments Section
+function toggleInstallments() {
+  const enabled = document.getElementById("enableInstallments").checked;
+  document.getElementById("installmentSection").style.display = enabled ? "block" : "none";
+  document.getElementById("installmentFields").innerHTML = "";
+}
+
+// Generate Installment Input Fields
+function generateInstallmentFields() {
+  const count = parseInt(document.getElementById("numInstallments").value) || 0;
+  const container = document.getElementById("installmentFields");
+  container.innerHTML = "";
+
+  for (let i = 1; i <= count; i++) {
+    const input = document.createElement("input");
+    input.type = "number";
+    input.id = `installment-${i}`;
+    input.placeholder = `Installment ${i} Amount`;
+    container.appendChild(input);
+  }
 }
