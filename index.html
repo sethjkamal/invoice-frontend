@@ -40,7 +40,6 @@
       <p><strong>Total: $<span id="totalAmount">0.00</span></strong></p>
     </fieldset>
 
-    <!-- Installment Section -->
     <fieldset>
       <legend>Installment Payments</legend>
       <label>
@@ -57,10 +56,8 @@
     <button type="submit">Preview Invoice</button>
   </form>
 
-  <!-- Professional Invoice Preview Section -->
   <div id="invoicePreview" style="display: none; font-family: Arial, sans-serif;">
     <div style="border: 1px solid #ccc; padding: 30px; max-width: 800px; margin: auto; background: #fff;">
-      <!-- Company Info -->
       <div style="display: flex; justify-content: space-between; align-items: center;">
         <div>
           <h2 style="margin: 0;">Zayan Soft Tech</h2>
@@ -75,10 +72,18 @@
 
       <hr style="margin: 20px 0;"/>
 
-      <!-- Invoice Details -->
       <div id="previewContent"></div>
 
-      <div style="margin-top: 30px; text-align: center;">
+      <div style="margin-top: 50px; display: flex; justify-content: space-between; font-size: 16px; font-weight: bold; color: #222; border-top: 1px solid #ccc; padding-top: 15px;">
+        <div>
+          <p>Email: info@zayansofttech.com</p>
+        </div>
+        <div style="text-align: right;">
+          <p>Phone: +92 333 3508798</p>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px; text-align: center;">
         <button onclick="downloadPDF()">Download as PDF</button>
         <button onclick="backToForm()">Back to Edit</button>
       </div>
