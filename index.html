@@ -36,8 +36,11 @@
       <legend>Summary</legend>
       <input type="number" id="tax" placeholder="Tax (%)" />
       <input type="number" id="discount" placeholder="Discount (%)" />
+      <input type="number" id="amountPaid" placeholder="Amount Paid" oninput="calculateTotal()" />
       <textarea id="notes" placeholder="Notes"></textarea>
       <p><strong>Total: $<span id="totalAmount">0.00</span></strong></p>
+      <p><strong>Remaining Balance: $<span id="remainingBalance">0.00</span></strong></p>
+      <p><strong>Payment Status: <span id="paymentStatus">Unpaid</span></strong></p>
     </fieldset>
 
     <fieldset>

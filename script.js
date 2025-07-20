@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   const invoiceNumber = "INV-" + Math.floor(Math.random() * 1000000);
   document.getElementById("invoiceNumber").value = invoiceNumber;
-
   addItem();
 });
 
@@ -35,12 +34,25 @@ function calculateTotal() {
 
   const taxPercent = parseFloat(document.getElementById("tax").value) || 0;
   const discountPercent = parseFloat(document.getElementById("discount").value) || 0;
+  const amountPaid = parseFloat(document.getElementById("amountPaid").value) || 0;
 
   const taxAmount = (subtotal * taxPercent) / 100;
   const discountAmount = (subtotal * discountPercent) / 100;
 
   const total = subtotal + taxAmount - discountAmount;
+  const remaining = total - amountPaid;
+
   document.getElementById("totalAmount").textContent = total.toFixed(2);
+  document.getElementById("remainingBalance").textContent = remaining.toFixed(2);
+
+  // Determine payment status
+  let status = "Unpaid";
+  if (amountPaid >= total) {
+    status = "Paid";
+  } else if (amountPaid > 0 && amountPaid < total) {
+    status = "Partial";
+  }
+  document.getElementById("paymentStatus").textContent = status;
 }
 
 document.getElementById("invoiceForm").addEventListener("submit", function (e) {
@@ -58,6 +70,9 @@ function generatePreview() {
   const dueDate = document.getElementById("dueDate").value;
   const tax = document.getElementById("tax").value || "0";
   const discount = document.getElementById("discount").value || "0";
+  const amountPaid = document.getElementById("amountPaid").value || "0.00";
+  const remainingBalance = document.getElementById("remainingBalance").textContent;
+  const paymentStatus = document.getElementById("paymentStatus").textContent;
   const notes = document.getElementById("notes").value;
   const totalAmount = document.getElementById("totalAmount").textContent;
 
@@ -96,6 +111,9 @@ function generatePreview() {
     <p><strong>Tax: </strong>${tax}%</p>
     <p><strong>Discount: </strong>${discount}%</p>
     <p><strong>Total: </strong>$${totalAmount}</p>
+    <p><strong>Amount Paid: </strong>$${amountPaid}</p>
+    <p><strong>Remaining Balance: </strong>$${remainingBalance}</p>
+    <p><strong>Payment Status: </strong>${paymentStatus}</p>
     <p><strong>Notes: </strong>${notes}</p>
   `;
 
@@ -128,7 +146,6 @@ function downloadPDF() {
 
   const element = document.getElementById("invoicePreview").firstElementChild;
 
-  // Use a small delay to ensure all layout is rendered before PDF generation
   setTimeout(() => {
     const opt = {
       margin: 0.5,
@@ -148,24 +165,31 @@ function downloadPDF() {
   }, 300);
 }
 
-// Toggle Installments Section
 function toggleInstallments() {
   const enabled = document.getElementById("enableInstallments").checked;
   document.getElementById("installmentSection").style.display = enabled ? "block" : "none";
   document.getElementById("installmentFields").innerHTML = "";
 }
 
-// Generate Installment Input Fields
 function generateInstallmentFields() {
   const count = parseInt(document.getElementById("numInstallments").value) || 0;
   const container = document.getElementById("installmentFields");
   container.innerHTML = "";
+
+  // Get remaining balance instead of total amount
+  const totalAmount = parseFloat(document.getElementById("totalAmount").textContent) || 0;
+  const amountPaid = parseFloat(document.getElementById("amountPaid").value) || 0;
+  const remainingBalance = totalAmount - amountPaid;
+
+  // Calculate even split for the remaining balance
+  const splitAmount = count > 0 ? (remainingBalance / count).toFixed(2) : 0;
 
   for (let i = 1; i <= count; i++) {
     const input = document.createElement("input");
     input.type = "number";
     input.id = `installment-${i}`;
     input.placeholder = `Installment ${i} Amount`;
+    input.value = splitAmount; // Autofill split amount
     container.appendChild(input);
   }
 }
