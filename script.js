@@ -58,6 +58,10 @@ function calculateTotal() {
 document.getElementById("invoiceForm").addEventListener("submit", function (e) {
   e.preventDefault();
   generatePreview();
+
+  // Gather invoice data and save it to backend
+  const invoiceData = collectInvoiceData();
+  saveInvoiceToBackend(invoiceData);
 });
 
 function generatePreview() {
@@ -117,7 +121,6 @@ function generatePreview() {
     <p><strong>Notes: </strong>${notes}</p>
   `;
 
-  // Add installment preview if enabled
   const enableInstallments = document.getElementById("enableInstallments").checked;
   if (enableInstallments) {
     const numInstallments = parseInt(document.getElementById("numInstallments").value) || 0;
@@ -176,12 +179,10 @@ function generateInstallmentFields() {
   const container = document.getElementById("installmentFields");
   container.innerHTML = "";
 
-  // Get remaining balance instead of total amount
   const totalAmount = parseFloat(document.getElementById("totalAmount").textContent) || 0;
   const amountPaid = parseFloat(document.getElementById("amountPaid").value) || 0;
   const remainingBalance = totalAmount - amountPaid;
 
-  // Calculate even split for the remaining balance
   const splitAmount = count > 0 ? (remainingBalance / count).toFixed(2) : 0;
 
   for (let i = 1; i <= count; i++) {
@@ -189,7 +190,82 @@ function generateInstallmentFields() {
     input.type = "number";
     input.id = `installment-${i}`;
     input.placeholder = `Installment ${i} Amount`;
-    input.value = splitAmount; // Autofill split amount
+    input.value = splitAmount;
     container.appendChild(input);
   }
+}
+
+// 🌐 Send Invoice Data to Backend
+async function saveInvoiceToBackend(invoiceData) {
+  try {
+    const response = await fetch("https://invoice-backend-ame5.onrender.com/api/invoices", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(invoiceData)
+    });
+
+    if (response.ok) {
+      alert("✅ Invoice saved successfully!");
+    } else {
+      alert("❌ Failed to save invoice. Please try again.");
+      console.error("Failed to save invoice:", response.statusText);
+    }
+  } catch (error) {
+    alert("❌ Error saving invoice. Check console for details.");
+    console.error("Error saving invoice:", error);
+  }
+}
+
+// Gather all form data into one object
+function collectInvoiceData() {
+  const name = document.getElementById("clientName").value;
+  const email = document.getElementById("clientEmail").value;
+  const phone = document.getElementById("clientPhone").value;
+  const address = document.getElementById("clientAddress").value;
+  const invoiceNumber = document.getElementById("invoiceNumber").value;
+  const invoiceDate = document.getElementById("invoiceDate").value;
+  const dueDate = document.getElementById("dueDate").value;
+  const tax = parseFloat(document.getElementById("tax").value) || 0;
+  const discount = parseFloat(document.getElementById("discount").value) || 0;
+  const amountPaid = parseFloat(document.getElementById("amountPaid").value) || 0;
+  const remainingBalance = parseFloat(document.getElementById("remainingBalance").textContent) || 0;
+  const paymentStatus = document.getElementById("paymentStatus").textContent;
+  const notes = document.getElementById("notes").value;
+  const totalAmount = parseFloat(document.getElementById("totalAmount").textContent);
+
+  const items = [];
+  document.querySelectorAll(".item-row").forEach(row => {
+    const description = row.querySelector(".itemDescription").value;
+    const quantity = parseFloat(row.querySelector(".itemQuantity").value) || 0;
+    const rate = parseFloat(row.querySelector(".itemRate").value) || 0;
+    const total = quantity * rate;
+
+    items.push({ description, quantity, rate, total });
+  });
+
+  const installments = [];
+  const enableInstallments = document.getElementById("enableInstallments").checked;
+  if (enableInstallments) {
+    const numInstallments = parseInt(document.getElementById("numInstallments").value) || 0;
+    for (let i = 1; i <= numInstallments; i++) {
+      const instValue = parseFloat(document.getElementById(`installment-${i}`).value) || 0;
+      installments.push(instValue);
+    }
+  }
+
+  return {
+    client: { name, email, phone, address },
+    invoiceNumber,
+    invoiceDate,
+    dueDate,
+    items,
+    tax,
+    discount,
+    totalAmount,
+    amountPaid,
+    remainingBalance,
+    paymentStatus,
+    notes,
+    installments
+  };
 }
