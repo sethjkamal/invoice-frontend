@@ -5,14 +5,82 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Zayan Admin Dashboard</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 20px;
+      display: none; /* Hidden until password check passes */
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    p {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    button {
+      display: block;
+      margin: 0 auto 20px auto;
+      padding: 10px 20px;
+      background-color: #0066cc;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #004a99;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background: white;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    th, td {
+      text-align: left;
+      padding: 10px;
+    }
+    th {
+      background-color: #0066cc;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    #savedInvoices {
+      max-width: 900px;
+      margin: auto;
+    }
+    #accessDenied {
+      text-align: center;
+      color: red;
+      font-size: 18px;
+      margin-top: 50px;
+    }
+  </style>
 </head>
 <body>
   <h1>Zayan Soft Tech 🔒 Admin Dashboard</h1>
-  <p>Here you can view and manage all saved invoices.</p>
+  <p>View all saved invoices below.</p>
 
-  <button onclick="fetchInvoices()" style="margin: 10px 0;">🔄 Refresh Invoices</button>
-  <div id="savedInvoices" style="overflow-x: auto; margin-top: 20px;"></div>
+  <button onclick="fetchInvoices()">🔄 Refresh Invoices</button>
+  <div id="savedInvoices"></div>
+  <div id="accessDenied" style="display:none;">❌ Access Denied</div>
 
+  <script>
+    // Simple password prompt
+    const password = prompt("Enter Admin Password:");
+    if (password === "Zayan$123") { // ✅ Change to desired password
+      document.body.style.display = "block";
+    } else {
+      document.getElementById("accessDenied").style.display = "block";
+    }
+  </script>
   <script src="admin.js"></script>
 </body>
 </html>
